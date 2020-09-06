@@ -1,0 +1,54 @@
+name: Build & Deploy NotesAPI To Team 1 Server (161.97.73.13)
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: Replace local application properties with production application properties
+      run: mv ./src/main/resources/production/application.properties ./src/main/resources/application.properties -f
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+    - name: Copy jar to ./todeploy/notesapi.jar
+      run: jarname=$(ls --file-type ./target | grep 'NotesAPI.*\.jar$') && mkdir todeploy && mv "./target/${jarname}" ./todeploy/notesapi.jar -f
+    
+    - name: SSH Command - Stop & Delete Old API
+      uses: appleboy/ssh-action@master
+      with:
+        host: 161.97.73.13
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 2222
+        script: sudo systemctl stop notesapi.service && sudo rm -r /var/notesapi/* || true
+
+    - name: SFTP Deploy - Upload New API
+      uses: wlixcc/SFTP-Deploy-Action@v1.0
+      with:
+        username: ${{ secrets.USERNAME }}
+        server: 161.97.73.13
+        port: 2222
+        ssh_private_key: ${{ secrets.PRIVATE_KEY }} # copy private_key from *.pem file, keep format
+        local_path: ./todeploy/*      # copy jar from local path...
+        remote_path: /var/notesapi    # to this remote_path
+        # sftp args                   # arguments for sftp, optional
+    
+    - name: SSH Command - Adjust Permissions & Restart API
+      uses: appleboy/ssh-action@master
+      with:
+        host: 161.97.73.13
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        port: 2222
+        script: sudo chown -R ${{ secrets.USERNAME }}:${{ secrets.USERNAME }} /var/notesapi/ && sudo chmod 500 /var/notesapi/notesapi.jar && sudo systemctl restart notesapi.service

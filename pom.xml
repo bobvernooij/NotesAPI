@@ -10,6 +10,9 @@
 	</parent>
 	<groupId>com.cornelisdemooij</groupId>
 	<artifactId>NotesAPI</artifactId>
+
+	<packaging>jar</packaging>
+
 	<version>0.0.1-SNAPSHOT</version>
 	<name>NotesAPI</name>
 	<description>Simple demo project for making an API with Hibernate</description>
@@ -60,6 +63,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
