@@ -33,8 +33,6 @@ public class NoteEndpoint {
     @Path("{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getNote(@PathParam("id") long id) {
-        System.out.println(id);
-
         Optional<Note> optionalNote = noteService.findById(id);
         if (optionalNote.isPresent()) {
             Note note = optionalNote.get();

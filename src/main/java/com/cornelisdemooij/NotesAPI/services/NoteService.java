@@ -30,7 +30,7 @@ public class NoteService {
         Optional<Note> optionalOldNote = findById(id);
         if (optionalOldNote.isPresent()) {
             Note oldNote = optionalOldNote.get();
-            newNote.setId(oldNote.getId());
+            newNote.id = oldNote.id;
             return Optional.of(save(newNote));
         } else {
             throw new Exception("Error: tried to update a note that does not exist.");
