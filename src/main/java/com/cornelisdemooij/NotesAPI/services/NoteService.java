@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Optional;
 
 @Service
@@ -15,6 +17,8 @@ public class NoteService {
     private NoteRepository noteRepository;
 
     public Note save(Note note) {
+        note.creation = Timestamp.from(Instant.now());
+        note.modified = Timestamp.from(Instant.now());
         return noteRepository.save(note);
     }
 
@@ -31,7 +35,9 @@ public class NoteService {
         if (optionalOldNote.isPresent()) {
             Note oldNote = optionalOldNote.get();
             newNote.id = oldNote.id;
-            return Optional.of(save(newNote));
+            newNote.creation = oldNote.creation;
+            newNote.modified = Timestamp.from(Instant.now());
+            return Optional.of(noteRepository.save(newNote));
         } else {
             throw new Exception("Error: tried to update a note that does not exist.");
         }
