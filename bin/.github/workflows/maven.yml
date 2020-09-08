@@ -1,4 +1,4 @@
-name: Build & Deploy NotesAPI To Team 1 Server (161.97.73.14)
+name: Build & Deploy NotesAPI To Team 1 Server (161.97.73.13)
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
     - name: SSH Command - Stop & Delete Old API
       uses: appleboy/ssh-action@master
       with:
-        host: 161.97.73.14
+        host: 161.97.73.13
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.PRIVATE_KEY }}
         port: 2222
@@ -37,7 +37,7 @@ jobs:
       uses: wlixcc/SFTP-Deploy-Action@v1.0
       with:
         username: ${{ secrets.USERNAME }}
-        server: 161.97.73.14
+        server: 161.97.73.13
         port: 2222
         ssh_private_key: ${{ secrets.PRIVATE_KEY }} # copy private_key from *.pem file, keep format
         local_path: ./todeploy/*      # copy jar from local path...
@@ -47,7 +47,7 @@ jobs:
     - name: SSH Command - Adjust Permissions & Restart API
       uses: appleboy/ssh-action@master
       with:
-        host: 161.97.73.14
+        host: 161.97.73.13
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.PRIVATE_KEY }}
         port: 2222
