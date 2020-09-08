@@ -46,7 +46,7 @@ public class NoteEndpoint {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getNotes() {
         Iterable<Note> notes = noteService.findAll();
-        return Response.ok(notes).build();
+        return Response.ok("{\"value\":\"test\"}").build();
     }
 
     @PUT
